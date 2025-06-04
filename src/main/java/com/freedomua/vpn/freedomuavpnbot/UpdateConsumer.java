@@ -2,7 +2,6 @@ package com.freedomua.vpn.freedomuavpnbot;
 
 import com.freedomua.vpn.freedomuavpnbot.config.TelegramBotConfig;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;

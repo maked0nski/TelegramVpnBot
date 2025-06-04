@@ -12,5 +12,5 @@ public class TelegramBotConfig {
     @Getter
     @Setter
     private String token;
-    private String username;
+//    private String username;
 }

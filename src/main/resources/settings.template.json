@@ -1,0 +1,43 @@
+{
+  "outline_servers": [
+    {
+      "id": "server1",
+      "api_url": "https://123.123.123.123:65536/XXXXXXXXXXXX_XXXXXXXXX",
+      "location": "Somewhere",
+      "is_enabled": true
+    },
+    {
+      "id": "server2",
+      "api_url": "https://456.456.456.456:65536/XXXXXXXXXXXX_XXXXXXXXX",
+      "location": "Somewhere else",
+      "is_enabled": true
+    }
+  ],
+
+  "tg_bot_settings":
+  {
+    "main_bot_api_token": "<your-tg-token-goes-here>",
+    "monitor_bot_api_token": "<your-tg-token-goes-here>",
+
+    "admin_chat_id": "123456789",
+
+    "default_server_id": "server1",
+
+    "enable_blacklist": true,
+    "enable_whitelist": false,
+
+    "blacklisted_chat_ids": ["987654321", "543219876"],
+    "whitelisted_chat_ids": []
+  },
+
+  "outline_dl_links":
+  {
+    "windows" : "https://s3.amazonaws.com/outline-releases/client/windows/stable/Outline-Client.exe",
+    "macos"   : "https://itunes.apple.com/us/app/outline-app/id1356178125",
+    "linux"   : "https://s3.amazonaws.com/outline-releases/client/linux/stable/Outline-Client.AppImage",
+    "chromeos": "https://play.google.com/store/apps/details?id=org.outline.android.client",
+    "ios"     : "https://itunes.apple.com/us/app/outline-app/id1356177741",
+    "android" : "https://play.google.com/store/apps/details?id=org.outline.android.client",
+    "apk"     : "https://s3.amazonaws.com/outline-releases/client/android/stable/Outline-Client.apk"
+  }
+}

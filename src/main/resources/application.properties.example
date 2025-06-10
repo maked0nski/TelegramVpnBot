@@ -1,0 +1,22 @@
+spring.application.name=TelegramVpnBot
+
+# Telegram Bot Settings
+bot.token=<your-tg-token-goes-here>
+bot.username=<name-of-your-bot>
+bot.adminChatId=<your-admin-chat-id>
+bot.defaultServerId=server1
+
+# Outline Servers
+server.id=server1
+server.api-url=https://123.123.123.123:65536/XXXXXXXXXXXX_XXXXXXXXX
+server.location=Where-your-server-is-located
+server.enabled=true
+
+# Outline Download Links
+outlineLinks.windows=https://s3.amazonaws.com/outline-releases/client/windows/stable/Outline-Client.exe
+outlineLinks.macos=https://itunes.apple.com/us/app/outline-app/id1356178125
+outlineLinks.linux=https://s3.amazonaws.com/outline-releases/client/linux/stable/Outline-Client.AppImage
+outlineLinks.chromeos=https://play.google.com/store/apps/details?id=org.outline.android.client
+outlineLinks.ios=https://itunes.apple.com/us/app/outline-app/id1356177741
+outlineLinks.android=https://play.google.com/store/apps/details?id=org.outline.android.client
+outlineLinks.apk=https://s3.amazonaws.com/outline-releases/client/android/stable/Outline-Client.apk

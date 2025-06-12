@@ -6,6 +6,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
 
@@ -13,8 +15,13 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class StartCommand implements CommandController {
 
+    // Створюємо екземпляр логера для цього класу
+    private static final Logger LOGGER = LoggerFactory.getLogger(StartCommand.class);
+
     private final MessageSource messageSource;
     private final LocaleService localeService;
+
+
 
     @Override
     public String getCommandIdentifier() {
@@ -25,7 +32,11 @@ public class StartCommand implements CommandController {
     public SendMessage handle(Update update) {
         String chatId = update.getMessage().getChatId().toString();
         Locale userLocale = localeService.getUserLocale(chatId);
+        // Повідомлення беремо з messageSource
         String welcomeMessage = messageSource.getMessage("bot.message.start", null, userLocale);
+
+        // Логуємо подію
+        LOGGER.info("StartCommand executed successfully for user ID: {}", update.getMessage().getFrom().getId());
 
         return SendMessage.builder()
                 .chatId(chatId)
@@ -33,23 +44,4 @@ public class StartCommand implements CommandController {
                 .build();
     }
 
-
-//    private final BotSenderService botSenderService;
-//    private final MessageSource messageSource;
-//
-//    @Override
-//    public boolean canHandle(String command) {
-//        return "/start".equals(command);
-//    }
-//
-//    @Override
-//    public void handle(Update update, BotSenderService ignoredBotSenderService) {
-//        Locale locale = new Locale("uk");
-//
-//        String messageText = messageSource.getMessage("command.start.text", null, locale);
-//
-//        // ВИПРАВЛЕНО: Передаємо chatId та текст в конструктор SendMessage
-//        SendMessage msg = new SendMessage(String.valueOf(update.getMessage().getChatId()), messageText);
-//        botSenderService.sendMsg(msg);
-//    }
 }

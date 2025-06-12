@@ -6,12 +6,17 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
 
 @Component
 @RequiredArgsConstructor
 public class DownloadVpnCommand implements CommandController {
+
+    // Створюємо екземпляр логера для цього класу
+    private static final Logger log = LoggerFactory.getLogger(DownloadVpnCommand.class);
 
     private final MessageSource messageSource;
     private final LocaleService localeService;
@@ -33,6 +38,8 @@ public class DownloadVpnCommand implements CommandController {
     public SendMessage handle(Update update) {
         String chatId = update.getMessage().getChatId().toString();
         Locale userLocale = localeService.getUserLocale(chatId);
+
+        log.info("Received /downloadvpn command from chat ID: {}", chatId); // Логуємо подію
 
         String platformWindows = messageSource.getMessage("platform.windows", null, userLocale);
         String platformMacos = messageSource.getMessage("platform.macos", null, userLocale);
@@ -74,6 +81,8 @@ public class DownloadVpnCommand implements CommandController {
                 },
                 userLocale
         );
+        // Логуємо деталі (debug рівень)
+        log.debug("Constructed download message for chat ID {}: {}", chatId, downloadMessage);
 
         return SendMessage.builder()
                 .chatId(chatId)
@@ -84,7 +93,7 @@ public class DownloadVpnCommand implements CommandController {
     }
 
     // Дуже надійний метод екранування для MarkdownV2 (для звичайного тексту, не для URL)
-    private String escapeTextForMarkdownV2(String text) {
+    String escapeTextForMarkdownV2(String text) {
         if (text == null || text.isEmpty()) {
             return text;
         }

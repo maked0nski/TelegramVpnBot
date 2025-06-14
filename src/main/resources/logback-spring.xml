@@ -11,13 +11,17 @@
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/telegram-vpn-bot.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>logs/telegram-vpn-bot-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <maxHistory>30</maxHistory> <timeUnit>DAYS</timeUnit>
-            <totalSizeCap>1GB</totalSizeCap> <cleanHistoryOnStart>true</cleanHistoryOnStart>
-            <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-                <maxFileSize>10MB</maxFileSize> </triggeringPolicy>
+
+            <maxFileSize>10MB</maxFileSize>
+
+            <totalSizeCap>1GB</totalSizeCap>
+
+            <maxHistory>30</maxHistory>
         </rollingPolicy>
+
         <encoder>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</Pattern>
         </encoder>

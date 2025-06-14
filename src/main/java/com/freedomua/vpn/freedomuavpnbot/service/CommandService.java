@@ -1,91 +1,76 @@
 package com.freedomua.vpn.freedomuavpnbot.service;
 
-import com.freedomua.vpn.freedomuavpnbot.command.CommandController;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
+import com.freedomua.vpn.freedomuavpnbot.command.*;
+import com.freedomua.vpn.freedomuavpnbot.handler.CommandHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
+@Slf4j
 @Service
-@RequiredArgsConstructor
 public class CommandService {
 
-    private final BotSenderService botSenderService;
-    private final List<CommandController> commands;
+    private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
+    private final CommandHandler unknownCommandHandler;
+    private final BotMessageService messageService;
     private final MessageSource messageSource;
-    private final LocaleService localeService; // Впроваджуємо LocaleService
 
-    private Map<String, CommandController> commandMap;
+    public CommandService(
+            StartCommand startCommand,
+            HelpCommand helpCommand,
+            DownloadVpnCommand downloadVpnCommand,
+            SetLanguageCommand setLanguageCommand,
+            UnknownCommand unknownCommand,
+            BotMessageService messageService,
+            MessageSource messageSource
+    ) {
+        this.unknownCommandHandler = unknownCommand;
+        this.messageService = messageService;
+        this.messageSource = messageSource;
 
-    @PostConstruct
-    public void init() {
-        commandMap = commands.stream()
-                .collect(Collectors.toMap(CommandController::getCommandIdentifier, Function.identity()));
+        commandHandlers.put("/start", startCommand);
+        commandHandlers.put("/help", helpCommand);
+        commandHandlers.put("/downloadvpn", downloadVpnCommand);
+        commandHandlers.put("/setlang", setLanguageCommand);
     }
 
     public void processUpdate(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            Message message = update.getMessage();
-            String text = message.getText();
-            String chatId = message.getChatId().toString();
+        if (update.hasCallbackQuery()) {
+            String data = update.getCallbackQuery().getData();
+            Long chatId = update.getCallbackQuery().getMessage().getChatId();
+//            String message = messageSource.getMessage("bot.message.start", null, locale);
+//            botMessageService.sendMarkdownMessage(chatId, message);
 
-            Locale userLocale = localeService.getUserLocale(chatId); // Використовуємо LocaleService
-
-            if (text.startsWith("/")) {
-                String commandIdentifier = text.split(" ")[0];
-                CommandController command = commandMap.get(commandIdentifier);
-
-                if (command != null) {
-                    SendMessage response = command.handle(update);
-                    botSenderService.execute(response);
-                } else {
-                    SendMessage defaultResponse = SendMessage.builder()
-                            .chatId(chatId)
-                            .text(messageSource.getMessage("bot.message.unknown_command", null, userLocale))
-                            .build();
-                    botSenderService.execute(defaultResponse);
-                }
+            // Передати update без перевірок в обробник setlang
+            CommandHandler setLangHandler = commandHandlers.get("/setlang");
+            if (setLangHandler != null) {
+                setLangHandler.handle(update);
             } else {
-                SendMessage defaultResponse = SendMessage.builder()
-                        .chatId(chatId)
-                        .text(messageSource.getMessage("bot.message.received_text", new Object[]{text}, userLocale))
-                        .build();
-                botSenderService.execute(defaultResponse);
+                log.warn("No handler found for /setlang");
             }
-        } else if (update.hasCallbackQuery()) {
-            // Обробка CallbackQuery (для інлайн-кнопок)
-            String callbackData = update.getCallbackQuery().getData();
-            String chatId = update.getCallbackQuery().getMessage().getChatId().toString();
-
-            if (callbackData.startsWith("lang_")) {
-                String langCode = callbackData.substring("lang_".length());
-                if (localeService.isValidLanguage(langCode)) {
-                    Locale newLocale = new Locale(langCode);
-                    localeService.setUserLocale(chatId, newLocale);
-                    String successMessage = messageSource.getMessage("bot.message.language_changed", new Object[]{langCode}, newLocale);
-                    botSenderService.execute(SendMessage.builder()
-                            .chatId(chatId)
-                            .text(successMessage)
-                            .build());
-                } else {
-                    Locale userLocale = localeService.getUserLocale(chatId);
-                    String invalidMessage = messageSource.getMessage("bot.message.invalid_language", null, userLocale);
-                    botSenderService.execute(SendMessage.builder()
-                            .chatId(chatId)
-                            .text(invalidMessage)
-                            .build());
-                }
-            }
-            // Можна додати обробку інших типів callbackData
+            return;
         }
+
+        if (!update.hasMessage() || !update.getMessage().hasText()) {
+            log.warn("Update does not contain text message");
+            return;
+        }
+
+        Long chatId = update.getMessage().getChatId();
+        Locale locale = Locale.forLanguageTag(update.getMessage().getFrom().getLanguageCode());
+        String message = messageSource.getMessage("bot.message.start", null, locale);
+
+        String text = update.getMessage().getText().trim();
+        String command = text.split(" ")[0];
+        log.info("Processing command '{}' from user {}.", command, update.getMessage().getFrom().getId());
+
+        CommandHandler handler = commandHandlers.getOrDefault(command, unknownCommandHandler);
+        handler.handle(update);
     }
+
 }

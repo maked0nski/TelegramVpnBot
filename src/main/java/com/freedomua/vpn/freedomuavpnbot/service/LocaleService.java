@@ -1,38 +1,55 @@
 package com.freedomua.vpn.freedomuavpnbot.service;
 
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class LocaleService {
 
-    // Зберігаємо локаль користувача (chatId -> Locale)
+    private final MessageSource messageSource;
     private final Map<String, Locale> userLocales = new ConcurrentHashMap<>();
 
-    // Отримання списку підтримуваних мов (для інформування користувача)
-    // Підтримувані мови
-    @Getter
-    private final Set<String> supportedLanguages = Set.of("en", "uk"); // Можна зробити динамічно з properties
-
-    // Метод для отримання локалі користувача
-    public Locale getUserLocale(String chatId) {
-        // Повертаємо збережену локаль або дефолтну (англійську), якщо її немає
-        return userLocales.getOrDefault(chatId, Locale.ENGLISH);
+    public void setUserLocale(String userId, Locale locale) {
+        userLocales.put(userId, locale);
+        log.info("User {} locale set to {}", userId, locale.getLanguage());
     }
 
-    // Метод для встановлення локалі користувача
-    public void setUserLocale(String chatId, Locale locale) {
-        userLocales.put(chatId, locale);
+    public Locale getSavedUserLocale(String userId) {
+        return userLocales.getOrDefault(userId, Locale.ENGLISH);
     }
 
-    // Перевірка, чи підтримується мова
-    public boolean isValidLanguage(String langCode) {
-        return supportedLanguages.contains(langCode.toLowerCase());
+    public String getMessage(String code, String userId) {
+        Locale locale = getSavedUserLocale(userId);
+        return messageSource.getMessage(code, null, locale);
     }
 
+    public String getMessage(String code, String userId, Object... args) {
+        Locale locale = getSavedUserLocale(userId);
+        return messageSource.getMessage(code, args, locale);
+    }
+
+//    public Locale resolveLocaleFromCode(String languageCode) {
+//        if (languageCode == null || languageCode.isBlank()) {
+//            log.warn("Language code is null or blank. Defaulting to English.");
+//            return Locale.ENGLISH;
+//        }
+//
+//        switch (languageCode.toLowerCase()) {
+//            case "uk":
+//            case "ua":
+//                return new Locale("uk");
+//            case "en":
+//                return Locale.ENGLISH;
+//            default:
+//                log.warn("Unsupported language code: {}. Defaulting to English.", languageCode);
+//                return Locale.ENGLISH;
+//        }
+//    }
 }

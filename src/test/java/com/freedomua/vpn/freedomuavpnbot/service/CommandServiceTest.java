@@ -5,6 +5,7 @@ import com.freedomua.vpn.freedomuavpnbot.config.OutlineLinksProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.*;
@@ -19,6 +20,8 @@ public class CommandServiceTest {
     private MessageSource messageSource;
     private OutlineLinksProperties outlineLinksProperties;
     private LocaleService localeService;
+    @Mock
+    private UserService userService;
 
     @BeforeEach
     void setUp() {
@@ -28,7 +31,7 @@ public class CommandServiceTest {
         localeService = mock(LocaleService.class);
 
         commandService = new CommandService(
-                new StartCommand(botMessageService, localeService, messageSource),
+                new StartCommand(botMessageService, localeService, messageSource, userService),
                 new HelpCommand(botMessageService, messageSource, localeService),
                 new DownloadVpnCommand(botMessageService, messageSource, localeService, outlineLinksProperties),
                 new SetLanguageCommand(botMessageService, messageSource, localeService),

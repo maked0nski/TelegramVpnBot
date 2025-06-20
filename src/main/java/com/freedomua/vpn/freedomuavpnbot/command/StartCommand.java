@@ -1,8 +1,10 @@
 package com.freedomua.vpn.freedomuavpnbot.command;
 
 import com.freedomua.vpn.freedomuavpnbot.handler.CommandHandler;
+import com.freedomua.vpn.freedomuavpnbot.model.UserEntity;
 import com.freedomua.vpn.freedomuavpnbot.service.BotMessageService;
 import com.freedomua.vpn.freedomuavpnbot.service.LocaleService;
+import com.freedomua.vpn.freedomuavpnbot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -18,19 +20,28 @@ import java.util.Locale;
 public class StartCommand implements CommandHandler {
 
     private final BotMessageService botMessageService;
-    private final LocaleService localeService;
     private final MessageSource messageSource;
+    private final UserService userService;
 
     @Override
     public void handle(Update update) {
+        Message telegramMessage = update.getMessage();
         Long chatId = update.getMessage().getChatId();
-        Locale locale = Locale.forLanguageTag(update.getMessage().getFrom().getLanguageCode());
+
+        // Створення користувача
+        UserEntity user = new UserEntity();
+        user.setTelegramId(telegramMessage.getFrom().getId());
+        user.setUsername(telegramMessage.getFrom().getUserName());
+        user.setFirstName(telegramMessage.getFrom().getFirstName());
+        user.setLastName(telegramMessage.getFrom().getLastName());
+        user.setLanguageCode(telegramMessage.getFrom().getLanguageCode());
+
+        userService.createIfNotExists(user);
+
+        // Надсилання повідомлення
+        Locale locale = Locale.forLanguageTag(user.getLanguageCode());
         String message = messageSource.getMessage("bot.message.start", null, locale);
         botMessageService.sendMarkdownMessage(chatId, message);
 
-//        Long chatId = update.getMessage().getChatId();
-//        Locale locale = Locale.forLanguageTag(update.getMessage().getFrom().getLanguageCode());
-//        String message = messageSource.getMessage("bot.message.start", null, locale);
-//        messageService.sendMarkdownMessage(chatId, message);
     }
 }

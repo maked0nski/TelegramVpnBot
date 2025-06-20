@@ -1,11 +1,12 @@
 package com.freedomua.vpn.freedomuavpnbot.command;
 
+import com.freedomua.vpn.freedomuavpnbot.model.UserEntity;
 import com.freedomua.vpn.freedomuavpnbot.service.BotMessageService;
 import com.freedomua.vpn.freedomuavpnbot.service.LocaleService;
+import com.freedomua.vpn.freedomuavpnbot.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
@@ -13,8 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
-
-import java.util.Locale;
 
 import static org.mockito.Mockito.*;
 
@@ -25,23 +24,31 @@ class StartCommandTest {
     private BotMessageService messageService;
 
     @Mock
+    private LocaleService localeService;
+
+    @Mock
     private MessageSource messageSource;
 
     @Mock
-    private LocaleService localeService;
+    private UserService userService;
 
-    @InjectMocks
     private StartCommand startCommand;
 
     private Update testUpdate;
 
     @BeforeEach
     void setUp() {
+        // Ручне створення замість @InjectMocks
+        startCommand = new StartCommand(messageService, localeService, messageSource, userService);
+
         Chat chat = new Chat();
         chat.setId(12345L);
 
         User user = new User();
         user.setId(67890L);
+        user.setUserName("test_user");
+        user.setFirstName("Test");
+        user.setLastName("User");
         user.setLanguageCode("en");
 
         Message message = new Message();
@@ -54,15 +61,16 @@ class StartCommandTest {
     }
 
     @Test
-    void handle_shouldSendWelcomeMessage() {
-        when(localeService.getMessage(eq("bot.message.start"), anyString()))
+    void handle_shouldCreateUserAndSendWelcomeMessage() {
+        when(messageSource.getMessage(eq("bot.message.start"), any(), any()))
                 .thenReturn("Welcome to FreedomUAVpnBot!");
-        when(localeService.getMessage(eq("bot.message.help_prompt"), anyString()))
-                .thenReturn("Type /help for assistance.");
+
+        when(userService.createIfNotExists(any(UserEntity.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         startCommand.handle(testUpdate);
 
-        verify(messageService).sendMarkdownMessage(eq(12345L),
-                eq("Welcome to FreedomUAVpnBot!\n\nType /help for assistance."));
+        verify(userService, times(1)).createIfNotExists(any(UserEntity.class));
+        verify(messageService, times(1)).sendMarkdownMessage(eq(12345L), eq("Welcome to FreedomUAVpnBot!"));
     }
 }

@@ -39,7 +39,11 @@ Thumbs.db
 
 # Spring Boot sensitive config
 application.properties
+application-local.properties
+application-prod.properties
 settings.json
+.env
+.crt
 
 # Maven Wrapper
 .mvn/

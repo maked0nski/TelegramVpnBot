@@ -20,6 +20,7 @@ import java.util.Locale;
 public class StartCommand implements CommandHandler {
 
     private final BotMessageService botMessageService;
+    private final LocaleService localeService;
     private final MessageSource messageSource;
     private final UserService userService;
 

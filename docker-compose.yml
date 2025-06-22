@@ -33,8 +33,7 @@ services:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_PORT: ${POSTGRES_PORT}
       SERVER_API_URL: ${SERVER_API_URL}
-      env_file: .env
-        - SPRING_PROFILES_ACTIVE=prod
+      SPRING_PROFILES_ACTIVE: prod # Переміщено сюди як окрема змінна середовища
 
 volumes:
   postgres_data:

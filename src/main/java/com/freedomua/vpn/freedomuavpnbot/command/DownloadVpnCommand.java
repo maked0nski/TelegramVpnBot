@@ -2,6 +2,7 @@ package com.freedomua.vpn.freedomuavpnbot.command;
 
 import com.freedomua.vpn.freedomuavpnbot.config.OutlineLinksProperties;
 import com.freedomua.vpn.freedomuavpnbot.handler.CommandHandler;
+import com.freedomua.vpn.freedomuavpnbot.service.AsyncBotMessageService;
 import com.freedomua.vpn.freedomuavpnbot.service.BotMessageService;
 import com.freedomua.vpn.freedomuavpnbot.service.LocaleService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class DownloadVpnCommand implements CommandHandler {
     private final MessageSource messageSource;
     private final LocaleService localeService;
     private final OutlineLinksProperties outlineLinks;
+    private final AsyncBotMessageService asyncBotMessageService;
 
     @Override
     public void handle(Update update) {
@@ -43,6 +45,7 @@ public class DownloadVpnCommand implements CommandHandler {
                 locale
         );
 
-        botMessageService.sendMarkdownMessage(chatId, message);
+//        botMessageService.sendMarkdownMessage(chatId, message);
+        asyncBotMessageService.sendMarkdownMessage(chatId, message);
     }
 }

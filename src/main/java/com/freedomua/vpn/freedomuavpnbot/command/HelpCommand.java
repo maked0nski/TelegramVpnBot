@@ -1,6 +1,7 @@
 package com.freedomua.vpn.freedomuavpnbot.command;
 
 import com.freedomua.vpn.freedomuavpnbot.handler.CommandHandler;
+import com.freedomua.vpn.freedomuavpnbot.service.AsyncBotMessageService;
 import com.freedomua.vpn.freedomuavpnbot.service.BotMessageService;
 import com.freedomua.vpn.freedomuavpnbot.service.LocaleService;
 import lombok.RequiredArgsConstructor;
@@ -20,18 +21,17 @@ public class HelpCommand implements CommandHandler {
     private final BotMessageService botMessageService;
     private final MessageSource messageSource;
     private final LocaleService localeService;
+    private final AsyncBotMessageService asyncBotMessageService;
 
     @Override
     public void handle(Update update) {
         Long chatId = update.getMessage().getChatId();
         Locale locale = Locale.forLanguageTag(update.getMessage().getFrom().getLanguageCode());
+        Locale locale1 = localeService.getSavedUserLocale(chatId);
         String message = messageSource.getMessage("bot.message.help", null, locale);
-        botMessageService.sendMarkdownMessage(chatId, message);
-//        Message message = update.getMessage();
-//        String userId = String.valueOf(chatId);
-//
-//        String response = localeService.getMessage("bot.message.help", userId);
-//        botMessageService.sendMarkdownMessage(chatId, response);
+
+//        botMessageService.sendMarkdownMessage(chatId, message);
+        asyncBotMessageService.sendMarkdownMessage(chatId, message);
     }
 
 }

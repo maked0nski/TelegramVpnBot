@@ -2,6 +2,7 @@ package com.freedomua.vpn.freedomuavpnbot.command;
 
 import com.freedomua.vpn.freedomuavpnbot.handler.CommandHandler;
 import com.freedomua.vpn.freedomuavpnbot.model.UserEntity;
+import com.freedomua.vpn.freedomuavpnbot.service.AsyncBotMessageService;
 import com.freedomua.vpn.freedomuavpnbot.service.BotMessageService;
 import com.freedomua.vpn.freedomuavpnbot.service.LocaleService;
 import com.freedomua.vpn.freedomuavpnbot.service.UserService;
@@ -19,10 +20,10 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class StartCommand implements CommandHandler {
 
-    private final BotMessageService botMessageService;
-    private final LocaleService localeService;
     private final MessageSource messageSource;
     private final UserService userService;
+    private final AsyncBotMessageService asyncBotMessageService;
+    private final LocaleService localeService;
 
     @Override
     public void handle(Update update) {
@@ -40,9 +41,12 @@ public class StartCommand implements CommandHandler {
         userService.createIfNotExists(user);
 
         // Надсилання повідомлення
-        Locale locale = Locale.forLanguageTag(user.getLanguageCode());
-        String message = messageSource.getMessage("bot.message.start", null, locale);
-        botMessageService.sendMarkdownMessage(chatId, message);
+//        Locale locale = Locale.forLanguageTag(user.getLanguageCode());
+//        String message = messageSource.getMessage("bot.message.start", null, locale);
+
+        String text = localeService.getMessage("bot.message.start",chatId);
+//        botMessageService.sendMarkdownMessage(chatId, message);
+        asyncBotMessageService.sendMarkdownMessage(chatId, text);
 
     }
 }

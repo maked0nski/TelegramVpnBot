@@ -43,8 +43,6 @@ public class CommandService {
         if (update.hasCallbackQuery()) {
             String data = update.getCallbackQuery().getData();
             Long chatId = update.getCallbackQuery().getMessage().getChatId();
-//            String message = messageSource.getMessage("bot.message.start", null, locale);
-//            botMessageService.sendMarkdownMessage(chatId, message);
 
             // Передати update без перевірок в обробник setlang
             CommandHandler setLangHandler = commandHandlers.get("/setlang");

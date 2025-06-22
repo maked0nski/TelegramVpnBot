@@ -14,42 +14,24 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LocaleService {
 
     private final MessageSource messageSource;
-    private final Map<String, Locale> userLocales = new ConcurrentHashMap<>();
+    private final Map<Long, Locale> userLocales = new ConcurrentHashMap<>();
 
-    public void setUserLocale(String userId, Locale locale) {
-        userLocales.put(userId, locale);
-        log.info("User {} locale set to {}", userId, locale.getLanguage());
+    public void setUserLocale(Long chatId, Locale locale) {
+        userLocales.put(chatId, locale);
+        log.info("User {} locale set to {}", chatId, locale.getLanguage());
     }
 
-    public Locale getSavedUserLocale(String userId) {
-        return userLocales.getOrDefault(userId, Locale.ENGLISH);
+    public Locale getSavedUserLocale(Long chatId) {
+        return userLocales.getOrDefault(chatId, Locale.ENGLISH);
     }
 
-    public String getMessage(String code, String userId) {
-        Locale locale = getSavedUserLocale(userId);
-        return messageSource.getMessage(code, null, locale);
-    }
+//    public String getMessage(String code, Long chatId) {
+//        Locale locale = getSavedUserLocale(chatId);
+//        return messageSource.getMessage(code, null, locale);
+//    }
 
-    public String getMessage(String code, String userId, Object... args) {
-        Locale locale = getSavedUserLocale(userId);
+    public String getMessage(String code, Long chatId, Object... args) {
+        Locale locale = getSavedUserLocale(chatId);
         return messageSource.getMessage(code, args, locale);
     }
-
-//    public Locale resolveLocaleFromCode(String languageCode) {
-//        if (languageCode == null || languageCode.isBlank()) {
-//            log.warn("Language code is null or blank. Defaulting to English.");
-//            return Locale.ENGLISH;
-//        }
-//
-//        switch (languageCode.toLowerCase()) {
-//            case "uk":
-//            case "ua":
-//                return new Locale("uk");
-//            case "en":
-//                return Locale.ENGLISH;
-//            default:
-//                log.warn("Unsupported language code: {}. Defaulting to English.", languageCode);
-//                return Locale.ENGLISH;
-//        }
-//    }
 }

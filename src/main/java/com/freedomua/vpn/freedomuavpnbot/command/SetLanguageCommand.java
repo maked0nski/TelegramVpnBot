@@ -1,6 +1,7 @@
 package com.freedomua.vpn.freedomuavpnbot.command;
 
 import com.freedomua.vpn.freedomuavpnbot.handler.CommandHandler;
+import com.freedomua.vpn.freedomuavpnbot.service.AsyncBotMessageService;
 import com.freedomua.vpn.freedomuavpnbot.service.BotMessageService;
 import com.freedomua.vpn.freedomuavpnbot.service.LocaleService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class SetLanguageCommand implements CommandHandler {
     private final BotMessageService messageService;
     private final MessageSource messageSource;
     private final LocaleService localeService;
+    private final AsyncBotMessageService asyncBotMessageService;
 
     @Override
     public void handle(Update update) {
@@ -34,10 +36,11 @@ public class SetLanguageCommand implements CommandHandler {
             String selectedLang = update.getCallbackQuery().getData();
             chatId = update.getCallbackQuery().getMessage().getChatId();
             userId = String.valueOf(chatId);
-            localeService.setUserLocale(userId, Locale.forLanguageTag(selectedLang));
+            localeService.setUserLocale(chatId, Locale.forLanguageTag(selectedLang));
 
             String confirmation = messageSource.getMessage("bot.message.language_changed", null, Locale.forLanguageTag(selectedLang));
-            messageService.sendMarkdownMessage(chatId, confirmation);
+//            messageService.sendMarkdownMessage(chatId, confirmation);
+            asyncBotMessageService.sendMarkdownMessage(chatId, confirmation);
             return;
         }
 
@@ -46,7 +49,7 @@ public class SetLanguageCommand implements CommandHandler {
             chatId = message.getChatId();
             userId = String.valueOf(chatId);
 
-            String prompt = localeService.getMessage("bot.message.choose_language", userId);
+            String prompt = localeService.getMessage("bot.message.choose_language", chatId);
 
             InlineKeyboardButton enButton = new InlineKeyboardButton("English");
             enButton.setCallbackData("en");
@@ -62,7 +65,8 @@ public class SetLanguageCommand implements CommandHandler {
             sendMessage.setText(prompt);
             sendMessage.setReplyMarkup(keyboard);
 
-            messageService.sendMessageObject(sendMessage);
+//            messageService.sendMessageObject(sendMessage);
+            asyncBotMessageService.sendMessageObject(sendMessage);
         }
     }
 }

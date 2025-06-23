@@ -20,7 +20,6 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class StartCommand implements CommandHandler {
 
-    private final MessageSource messageSource;
     private final UserService userService;
     private final AsyncBotMessageService asyncBotMessageService;
     private final LocaleService localeService;
@@ -40,12 +39,7 @@ public class StartCommand implements CommandHandler {
 
         userService.createIfNotExists(user);
 
-        // Надсилання повідомлення
-//        Locale locale = Locale.forLanguageTag(user.getLanguageCode());
-//        String message = messageSource.getMessage("bot.message.start", null, locale);
-
         String text = localeService.getMessage("bot.message.start",chatId);
-//        botMessageService.sendMarkdownMessage(chatId, message);
         asyncBotMessageService.sendMarkdownMessage(chatId, text);
 
     }

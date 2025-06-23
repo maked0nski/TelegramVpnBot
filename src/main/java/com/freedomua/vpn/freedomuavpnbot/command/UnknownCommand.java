@@ -19,7 +19,7 @@ public class UnknownCommand implements CommandHandler {
     @Override
     public void handle(Update update) {
         Long chatId = update.getMessage().getChatId();
-        String text = localeService.getMessage("bot.message.unknown", chatId);
+        String text = localeService.getMessage("bot.message.unknown_command", chatId);
         asyncBotMessageService.sendMarkdownMessage(chatId, text);
     }
 }

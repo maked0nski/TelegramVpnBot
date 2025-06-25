@@ -19,7 +19,7 @@ import java.util.Optional;
 @PreAuthorize("isAuthenticated()")
 @RequiredArgsConstructor
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     @GetMapping("/{telegramId}")
     public ResponseEntity<UserEntity> getUserByTelegramId(@PathVariable Long telegramId) {

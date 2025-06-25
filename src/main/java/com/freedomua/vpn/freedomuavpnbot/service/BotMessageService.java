@@ -29,6 +29,15 @@ public class BotMessageService {
         sendRawMarkdownV2Message(chatId, escapedText);
     }
 
+    public void sendMessageObject(SendMessage message) {
+        try {
+            absSender.execute(message);
+        } catch (TelegramApiException e) {
+            log.warn("❌ Telegram send failed for chat {}: {}", message.getChatId(), e.getMessage());
+            throw new RuntimeException("Telegram send failed", e);
+        }
+    }
+
     @Retry(name = "telegram")
     @CircuitBreaker(name = "telegram", fallbackMethod = "fallbackSendMessage")
     public void sendRawMarkdownV2Message(Long chatId, String rawText) {
@@ -38,12 +47,13 @@ public class BotMessageService {
                 .parseMode("MarkdownV2")
                 .build();
 
-        try {
-            absSender.execute(message); // основна спроба
-        } catch (TelegramApiException e) {
-            log.warn("❌ Telegram send failed for chat {}: {}", chatId, e.getMessage());
-            throw new RuntimeException("Telegram send failed", e);
-        }
+        sendMessageObject(message);
+//        try {
+//            absSender.execute(message); // основна спроба
+//        } catch (TelegramApiException e) {
+//            log.warn("❌ Telegram send failed for chat {}: {}", chatId, e.getMessage());
+//            throw new RuntimeException("Telegram send failed", e);
+//        }
     }
 
     private void fallbackSendMessage(Long chatId, String rawText, Throwable ex) {

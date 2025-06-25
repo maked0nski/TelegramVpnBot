@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
-@PreAuthorize("isAuthenticated()")
+//@PreAuthorize("isAuthenticated()")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    @PermitAll
+//    @PermitAll
     public List<UserEntity> getAllUsers() {
         return userService.findAll();
     }

@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,5 +23,9 @@ public class UserService {
 
     public Optional<UserEntity> findByTelegramId(Long telegramId) {
         return userRepository.findByTelegramId(telegramId);
+    }
+
+    public List<UserEntity> findAll() {
+        return userRepository.findAll();
     }
 }

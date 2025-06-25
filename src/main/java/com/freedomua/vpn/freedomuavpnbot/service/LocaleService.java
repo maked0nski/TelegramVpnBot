@@ -25,11 +25,6 @@ public class LocaleService {
         return userLocales.getOrDefault(chatId, Locale.ENGLISH);
     }
 
-//    public String getMessage(String code, Long chatId) {
-//        Locale locale = getSavedUserLocale(chatId);
-//        return messageSource.getMessage(code, null, locale);
-//    }
-
     public String getMessage(String code, Long chatId, Object... args) {
         Locale locale = getSavedUserLocale(chatId);
         return messageSource.getMessage(code, args, locale);
